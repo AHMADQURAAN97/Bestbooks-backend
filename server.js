@@ -12,8 +12,8 @@ server.use(express.json());
 mongoose.connect('mongodb://localhost:27017/Book', { useNewUrlParser: true, useUnifiedTopology: true });
 
 
-const bookSchema = require('./model');
-const bookModel = require('./model');
+// const bookSchema = require('./model');
+// const bookModel = require('./model');
 
 
 
@@ -22,6 +22,7 @@ const bookModel = require('./model');
 server.get('/test', testHandler);
 server.get('/books', getBooksHandler);
 server.post('/addbook',addbookHandler);
+server.delete('/deletebook',deleteBookHandler);
 
 
 
@@ -98,26 +99,49 @@ function getBooksHandler(request,response) {
 }
 
 
-function addbookHandler(request,response) {
+async function addbookHandler(request,response) {
 
-let {email, title , description } = request.body;
+let {email, title ,status, description } = request.body;
 
-bookModel.find({email:email},function(err,ownerData){
+    await bookModel.create({email,status,title,description});
+
+    bookModel.findOne({email,title,description},function(err,ownerData){
 
     if(err){
         console.log('Error in getting data')
     }else {
-        ownerData.push({
-            title,
-            description,
-          });
+        
         console.log(ownerData);
-        response.send(ownerData)
+        response.send(ownerData);
     }
 
 })
 
+
 }
+
+
+async function deleteBookHandler(request,response) {
+
+    let email = request.query.email;
+    let bookID = request.params.id;
+
+    bookModel.remove({ _id: bookID }, (error, bookData) => {
+        if (error) {
+          response.send("error in deleting the data");
+        } else {
+          
+          bookModel.find({ email: email }, function (err, ownerData) {
+            if (err) {
+              console.log("error in getting the data");
+            } else {
+              response.send(ownerData);
+            }
+          });
+        }
+      });
+    }
+
 
 
 
@@ -132,3 +156,27 @@ function testHandler(req, res) {
 server.listen(PORT, () => {
     console.log(`listening on PORT ${PORT}`)
 })
+
+
+
+
+// async function addbookHandler(request,response) {
+
+//     let {email, title , description } = request.body;
+    
+//         await bookModel.create({email,title,description},function(err,ownerData){
+    
+//         if(err){
+//             console.log('Error in getting data')
+//         }else {
+//             ownerData.push({
+//                 title,
+//                 description,
+//               });
+//             console.log(ownerData);
+//             response.send(ownerData)
+//         }
+    
+//     })
+    
+//     }
