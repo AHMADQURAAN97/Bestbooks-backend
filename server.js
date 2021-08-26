@@ -22,7 +22,7 @@ mongoose.connect('mongodb://localhost:27017/Book', { useNewUrlParser: true, useU
 server.get('/test', testHandler);
 server.get('/books', getBooksHandler);
 server.post('/addbook',addbookHandler);
-server.delete('/deletebook',deleteBookHandler);
+server.delete('/deletebook/:id',deleteBookHandler);
 
 
 
@@ -101,11 +101,11 @@ function getBooksHandler(request,response) {
 
 async function addbookHandler(request,response) {
 
-let {email, title ,status, description } = request.body;
+let {email, title , description } = request.body;
 
-    await bookModel.create({email,status,title,description});
+    await bookModel.create({email, title ,description});
 
-    bookModel.findOne({email,title,description},function(err,ownerData){
+    bookModel.find({email,title,description},function(err,ownerData){
 
     if(err){
         console.log('Error in getting data')
@@ -121,7 +121,7 @@ let {email, title ,status, description } = request.body;
 }
 
 
-async function deleteBookHandler(request,response) {
+ function deleteBookHandler(request,response) {
 
     let email = request.query.email;
     let bookID = request.params.id;
@@ -130,7 +130,8 @@ async function deleteBookHandler(request,response) {
         if (error) {
           response.send("error in deleting the data");
         } else {
-          
+            console.log("data deleted", bookData);
+
           bookModel.find({ email: email }, function (err, ownerData) {
             if (err) {
               console.log("error in getting the data");
