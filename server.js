@@ -23,6 +23,7 @@ server.get('/test', testHandler);
 server.get('/books', getBooksHandler);
 server.post('/addbook',addbookHandler);
 server.delete('/deletebook/:id',deleteBookHandler);
+server.put('/updatebook/:id',updatebookHandler);
 
 
 
@@ -144,10 +145,39 @@ let {email, title , description } = request.body;
     }
 
 
+function updatebookHandler (request,response){
 
+    let {email,description,title} =request.body;
 
+    let bookID = request.params.id
+     console.log(request.body)
+    bookModel.findOne({_id:bookID},(error,bookData)=> {
+    
+    
 
+    bookData.title=title;  //change the data and will send it for frontend
+    bookData.description=description; //change the data and will send it for frontend
+    bookData.email=email ;//change the data and will send it for frontend
 
+    bookData.save()
+    .then(()=>{ 
+        bookModel.find({ email : email }, function (err,ownerData) { 
+    
+      if (err){
+     console.log('error in getting the data')
+    } else {
+        response.send(ownerData)
+      }
+    
+    })
+    
+    })
+    .catch(error=>{
+        console.log('error in saving ')
+    })
+    })
+
+ }
 
 
 function testHandler(req, res) {
@@ -180,4 +210,3 @@ server.listen(PORT, () => {
     
 //     })
     
-//     }
