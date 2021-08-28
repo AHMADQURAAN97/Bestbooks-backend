@@ -107,7 +107,7 @@ let {email, title , description } = request.body;
 
     await bookModel.create({email, title ,description});
 
-    bookModel.find({email,title,description},function(err,ownerData){
+    bookModel.find({email},function(err,ownerData){
 
     if(err){
         console.log('Error in getting data')
