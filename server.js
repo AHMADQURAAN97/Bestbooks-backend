@@ -9,7 +9,8 @@ const PORT = process.env.PORT;
 const server = express();
 server.use(cors());
 server.use(express.json());
-mongoose.connect('mongodb://localhost:27017/Book', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(`${process.env.MONGO_LINK}`, { useNewUrlParser: true, useUnifiedTopology: true });
+
 
 
 // const bookSchema = require('./model');
@@ -148,8 +149,8 @@ let {email, title , description } = request.body;
 function updatebookHandler (request,response){
 
     let {email,description,title} =request.body;
-
     let bookID = request.params.id
+
      console.log(request.body)
     bookModel.findOne({_id:bookID},(error,bookData)=> {
     
